@@ -19,6 +19,10 @@ interface Settings {
   machineId?: string
   machineIdConfirmedByServer?: boolean
   daemonAutoStartWhenRunningHappy?: boolean
+  // Server URLs - can be set in config file as defaults
+  // Priority: environment variable > config file > default
+  serverUrl?: string
+  webappUrl?: string
 }
 
 const defaultSettings: Settings = {
