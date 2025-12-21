@@ -257,8 +257,9 @@ export async function startDaemon(): Promise<void> {
         }
 
         // Construct arguments for the CLI
+        const agentCommand = options.agent ?? 'claude';  // Default to claude if not specified
         const args = [
-          options.agent === 'claude' ? 'claude' : 'codex',
+          agentCommand,
           '--happy-starting-mode', 'remote',
           '--started-by', 'daemon'
         ];
