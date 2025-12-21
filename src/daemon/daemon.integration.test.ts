@@ -195,7 +195,8 @@ describe.skipIf(!await isServerHealthy())('Daemon Integration Tests', { timeout:
     ], {
       cwd: '/tmp',
       detached: true,
-      stdio: 'ignore'
+      stdio: 'ignore',
+      windowsHide: true  // Prevent opening a new console window on Windows
     });
     if (!terminalHappyProcess || !terminalHappyProcess.pid) {
       throw new Error('Failed to spawn terminal happy process');

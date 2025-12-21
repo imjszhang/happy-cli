@@ -167,7 +167,8 @@ import { execFileSync } from 'node:child_process'
       const child = spawnHappyCLI(['daemon', 'start-sync'], {
         detached: true,
         stdio: 'ignore',
-        env: process.env
+        env: process.env,
+        windowsHide: true  // Prevent opening a new console window on Windows
       });
       child.unref();
 
@@ -365,7 +366,8 @@ ${chalk.bold.cyan('Claude Code Options (from `claude --help`):')}
       const daemonProcess = spawnHappyCLI(['daemon', 'start-sync'], {
         detached: true,
         stdio: 'ignore',
-        env: process.env
+        env: process.env,
+        windowsHide: true  // Prevent opening a new console window on Windows
       })
       daemonProcess.unref();
 

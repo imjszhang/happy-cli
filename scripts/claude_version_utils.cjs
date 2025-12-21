@@ -357,7 +357,8 @@ function runClaudeCli(cliPath) {
         const args = process.argv.slice(2);
         const child = spawn(cliPath, args, {
             stdio: 'inherit',
-            env: process.env
+            env: process.env,
+            windowsHide: true  // Prevent opening a new console window on Windows
         });
         child.on('exit', (code) => {
             process.exit(code || 0);

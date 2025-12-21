@@ -273,7 +273,8 @@ export async function startDaemon(): Promise<void> {
           env: {
             ...process.env,
             ...extraEnv
-          }
+          },
+          windowsHide: true  // Prevent opening a new console window on Windows
         });
 
         // Log output for debugging
@@ -498,7 +499,8 @@ export async function startDaemon(): Promise<void> {
         try {
           spawnHappyCLI(['daemon', 'start'], {
             detached: true,
-            stdio: 'ignore'
+            stdio: 'ignore',
+            windowsHide: true  // Prevent opening a new console window on Windows
           });
         } catch (error) {
           logger.debug('[DAEMON RUN] Failed to spawn new daemon, this is quite likely to happen during integration tests as we are cleaning out dist/ directory', error);
