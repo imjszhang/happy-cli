@@ -152,6 +152,7 @@ export function registerCommonHandlers(rpcHandlerManager: RpcHandlerManager, wor
             const options: ExecOptions = {
                 cwd: data.cwd,
                 timeout: data.timeout || 30000, // Default 30 seconds timeout
+                windowsHide: true,  // Prevent opening a new console window on Windows
             };
 
             const { stdout, stderr } = await execAsync(data.command, options);
