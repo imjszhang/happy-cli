@@ -109,7 +109,8 @@ export class ApiMachineClient {
                 throw new Error('Directory is required');
             }
 
-            const result = await spawnSession({ directory, sessionId, machineId, approvedNewDirectoryCreation, agent, token });
+            // 强制使用 claude，忽略后端传递的 agent 参数
+            const result = await spawnSession({ directory, sessionId, machineId, approvedNewDirectoryCreation, agent: 'claude', token });
 
             switch (result.type) {
                 case 'success':
