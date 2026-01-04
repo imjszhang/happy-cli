@@ -2,7 +2,6 @@ import { decodeBase64, encodeBase64, encodeBase64Url } from "@/api/encryption";
 import { configuration } from "@/configuration";
 import { randomBytes } from "node:crypto";
 import tweetnacl from 'tweetnacl';
-import axios from 'axios';
 import { displayQRCode } from "./qrcode";
 import { delay } from "@/utils/time";
 import { writeCredentialsLegacy, readCredentials, updateSettings, Credentials, writeCredentialsDataKey } from "@/persistence";
@@ -13,6 +12,7 @@ import { render } from 'ink';
 import React from 'react';
 import { randomUUID } from 'node:crypto';
 import { logger } from './logger';
+import { httpClient, ApiKeyAuthError } from "@/api/httpClient";
 
 export async function doAuth(): Promise<Credentials | null> {
     console.clear();
@@ -32,14 +32,19 @@ export async function doAuth(): Promise<Credentials | null> {
     try {
         console.log(`[AUTH DEBUG] Sending auth request to: ${configuration.serverUrl}/v1/auth/request`);
         console.log(`[AUTH DEBUG] Public key: ${encodeBase64(keypair.publicKey).substring(0, 20)}...`);
-        await axios.post(`${configuration.serverUrl}/v1/auth/request`, {
+        await httpClient.post(`${configuration.serverUrl}/v1/auth/request`, {
             publicKey: encodeBase64(keypair.publicKey),
             supportsV2: true
         });
         console.log(`[AUTH DEBUG] Auth request sent successfully`);
     } catch (error) {
         console.log(`[AUTH DEBUG] Failed to send auth request:`, error);
-        console.log('Failed to create authentication request, please try again later.');
+        if (error instanceof ApiKeyAuthError) {
+            console.log('API Key authentication failed. Please check your API Key configuration.');
+            console.log('Use "happy config set-api-key <key>" or set HAPPY_API_KEY environment variable.');
+        } else {
+            console.log('Failed to create authentication request, please try again later.');
+        }
         return null;
     }
 
@@ -149,7 +154,7 @@ async function waitForAuthentication(keypair: tweetnacl.BoxKeyPair): Promise<Cre
     try {
         while (!cancelled) {
             try {
-                const response = await axios.post(`${configuration.serverUrl}/v1/auth/request`, {
+                const response = await httpClient.post(`${configuration.serverUrl}/v1/auth/request`, {
                     publicKey: encodeBase64(keypair.publicKey),
                     supportsV2: true
                 });
@@ -200,7 +205,11 @@ async function waitForAuthentication(keypair: tweetnacl.BoxKeyPair): Promise<Cre
                     }
                 }
             } catch (error) {
-                console.log('\n\nFailed to check authentication status. Please try again.');
+                if (error instanceof ApiKeyAuthError) {
+                    console.log('\n\nAPI Key authentication failed. Please check your API Key configuration.');
+                } else {
+                    console.log('\n\nFailed to check authentication status. Please try again.');
+                }
                 return null;
             }
 

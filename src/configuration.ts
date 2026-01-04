@@ -27,6 +27,9 @@ class Configuration {
   public readonly isExperimentalEnabled: boolean
   public readonly disableCaffeinate: boolean
 
+  // API Key for service-level authentication (X-API-Key header)
+  public readonly apiKey: string | null
+
   constructor() {
     // Check if we're running as daemon based on process args
     const args = process.argv.slice(2)
@@ -57,7 +60,7 @@ class Configuration {
     }
 
     // Read settings from config file (if exists)
-    let configFileSettings: { serverUrl?: string; webappUrl?: string } = {}
+    let configFileSettings: { serverUrl?: string; webappUrl?: string; apiKey?: string } = {}
     try {
       if (existsSync(this.settingsFile)) {
         const content = readFileSync(this.settingsFile, 'utf8')
@@ -68,6 +71,9 @@ class Configuration {
         if (parsed.webappUrl && typeof parsed.webappUrl === 'string') {
           configFileSettings.webappUrl = parsed.webappUrl
         }
+        if (parsed.apiKey && typeof parsed.apiKey === 'string') {
+          configFileSettings.apiKey = parsed.apiKey
+        }
       }
     } catch {
       // If config file is corrupted or can't be read, ignore it
@@ -77,6 +83,9 @@ class Configuration {
     // Server configuration - priority: environment > config file > default
     this.serverUrl = process.env.HAPPY_SERVER_URL || configFileSettings.serverUrl || 'https://api.cluster-fluster.com'
     this.webappUrl = process.env.HAPPY_WEBAPP_URL || configFileSettings.webappUrl || 'https://app.happy.engineering'
+
+    // API Key - priority: environment > config file > null (backward compatible)
+    this.apiKey = process.env.HAPPY_API_KEY || configFileSettings.apiKey || null
 
     this.isExperimentalEnabled = ['true', '1', 'yes'].includes(process.env.HAPPY_EXPERIMENTAL?.toLowerCase() || '');
     this.disableCaffeinate = ['true', '1', 'yes'].includes(process.env.HAPPY_DISABLE_CAFFEINATE?.toLowerCase() || '');

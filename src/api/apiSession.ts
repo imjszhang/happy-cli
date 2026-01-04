@@ -10,6 +10,7 @@ import { randomUUID } from 'node:crypto';
 import { AsyncLock } from '@/utils/lock';
 import { RpcHandlerManager } from './rpc/RpcHandlerManager';
 import { registerCommonHandlers } from '../modules/common/registerCommonHandlers';
+import { getSocketExtraHeaders } from './httpClient';
 
 export class ApiSessionClient extends EventEmitter {
     private readonly token: string;
@@ -57,6 +58,7 @@ export class ApiSessionClient extends EventEmitter {
                 clientType: 'session-scoped' as const,
                 sessionId: this.sessionId
             },
+            extraHeaders: getSocketExtraHeaders(),
             path: '/v1/updates',
             reconnection: true,
             reconnectionAttempts: Infinity,

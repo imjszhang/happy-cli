@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { logger } from '@/ui/logger'
 import type { AgentState, CreateSessionResponse, Metadata, Session, Machine, MachineMetadata, DaemonState } from '@/api/types'
 import { ApiSessionClient } from './apiSession';
@@ -8,6 +7,7 @@ import { PushNotificationClient } from './pushNotifications';
 import { configuration } from '@/configuration';
 import chalk from 'chalk';
 import { Credentials } from '@/persistence';
+import { httpClient, getAuthHeaders } from './httpClient';
 
 export class ApiClient {
 
@@ -56,7 +56,7 @@ export class ApiClient {
 
     // Create session
     try {
-      const response = await axios.post<CreateSessionResponse>(
+      const response = await httpClient.post<CreateSessionResponse>(
         `${configuration.serverUrl}/v1/sessions`,
         {
           tag: opts.tag,
@@ -65,10 +65,7 @@ export class ApiClient {
           dataEncryptionKey: dataEncryptionKey ? encodeBase64(dataEncryptionKey) : null,
         },
         {
-          headers: {
-            'Authorization': `Bearer ${this.credential.token}`,
-            'Content-Type': 'application/json'
-          },
+          headers: getAuthHeaders(this.credential.token),
           timeout: 60000 // 1 minute timeout for very bad network connections
         }
       )
@@ -121,7 +118,7 @@ export class ApiClient {
     }
 
     // Create machine
-    const response = await axios.post(
+    const response = await httpClient.post(
       `${configuration.serverUrl}/v1/machines`,
       {
         id: opts.machineId,
@@ -130,10 +127,7 @@ export class ApiClient {
         dataEncryptionKey: dataEncryptionKey ? encodeBase64(dataEncryptionKey) : undefined
       },
       {
-        headers: {
-          'Authorization': `Bearer ${this.credential.token}`,
-          'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(this.credential.token),
         timeout: 60000 // 1 minute timeout for very bad network connections
       }
     );
@@ -178,16 +172,13 @@ export class ApiClient {
    */
   async registerVendorToken(vendor: 'openai' | 'anthropic' | 'gemini', apiKey: any): Promise<void> {
     try {
-      const response = await axios.post(
+      const response = await httpClient.post(
         `${configuration.serverUrl}/v1/connect/${vendor}/register`,
         {
           token: JSON.stringify(apiKey)
         },
         {
-          headers: {
-            'Authorization': `Bearer ${this.credential.token}`,
-            'Content-Type': 'application/json'
-          },
+          headers: getAuthHeaders(this.credential.token),
           timeout: 5000
         }
       );

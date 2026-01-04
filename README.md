@@ -25,6 +25,7 @@ This will:
 
 - `happy auth` – Manage authentication
 - `happy codex` – Start Codex mode
+- `happy config` – Manage CLI configuration (API keys, server URLs)
 - `happy connect` – Store AI vendor API keys in Happy cloud
 - `happy notify` – Send a push notification to your devices
 - `happy daemon` – Manage background service
@@ -43,6 +44,7 @@ This will:
 
 ### Environment Variables
 
+- `HAPPY_API_KEY` - API Key for service-level authentication (required if server has API keys configured)
 - `HAPPY_SERVER_URL` - Custom server URL (default: https://api.cluster-fluster.com)
 - `HAPPY_WEBAPP_URL` - Custom web app URL (default: https://app.happy.engineering)
 - `HAPPY_HOME_DIR` - Custom home directory for Happy data (default: ~/.happy)
@@ -51,11 +53,12 @@ This will:
 
 ### Configuration File
 
-You can set default server URLs in the configuration file at `~/.happy/settings.json`:
+You can set configuration in the file at `~/.happy/settings.json`:
 
 ```json
 {
   "onboardingCompleted": true,
+  "apiKey": "your-api-key-here",
   "serverUrl": "https://api.cluster-fluster.com",
   "webappUrl": "https://app.happy.engineering"
 }
@@ -63,7 +66,19 @@ You can set default server URLs in the configuration file at `~/.happy/settings.
 
 **Configuration Priority**: Environment variables > Configuration file > Default values
 
-This allows you to set default server URLs in the config file while still being able to override them with environment variables when needed.
+This allows you to set defaults in the config file while still being able to override them with environment variables when needed.
+
+### Config Command
+
+Use the `config` command to manage your configuration:
+
+```bash
+# Set API Key
+happy config set-api-key sk-xxxx-xxxx
+
+# Show current configuration
+happy config show
+```
 
 ## Requirements
 

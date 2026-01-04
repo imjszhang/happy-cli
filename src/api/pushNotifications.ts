@@ -1,6 +1,6 @@
-import axios from 'axios'
 import { logger } from '@/ui/logger'
 import { Expo, ExpoPushMessage } from 'expo-server-sdk'
+import { httpClient, getAuthHeaders } from './httpClient'
 
 export interface PushToken {
     id: string
@@ -26,13 +26,10 @@ export class PushNotificationClient {
      */
     async fetchPushTokens(): Promise<PushToken[]> {
         try {
-            const response = await axios.get<{ tokens: PushToken[] }>(
+            const response = await httpClient.get<{ tokens: PushToken[] }>(
                 `${this.baseUrl}/v1/push-tokens`,
                 {
-                    headers: {
-                        'Authorization': `Bearer ${this.token}`,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: getAuthHeaders(this.token)
                 }
             )
 

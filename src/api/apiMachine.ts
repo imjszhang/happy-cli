@@ -11,6 +11,7 @@ import { registerCommonHandlers, SpawnSessionOptions, SpawnSessionResult } from 
 import { encodeBase64, decodeBase64, encrypt, decrypt } from './encryption';
 import { backoff } from '@/utils/time';
 import { RpcHandlerManager } from './rpc/RpcHandlerManager';
+import { getSocketExtraHeaders } from './httpClient';
 
 interface ServerToDaemonEvents {
     update: (data: Update) => void;
@@ -225,6 +226,7 @@ export class ApiMachineClient {
                 clientType: 'machine-scoped' as const,
                 machineId: this.machine.id
             },
+            extraHeaders: getSocketExtraHeaders(),
             path: '/v1/updates',
             reconnection: true,
             reconnectionDelay: 1000,
