@@ -257,7 +257,24 @@ export async function startDaemon(): Promise<void> {
         }
 
         // Construct arguments for the CLI
-        const agentCommand = options.agent ?? 'claude';  // Default to claude if not specified
+        let agentCommand: string;
+        switch (options.agent) {
+          case 'claude':
+          case undefined:
+            agentCommand = 'claude';
+            break;
+          case 'codex':
+            agentCommand = 'codex';
+            break;
+          case 'gemini':
+            agentCommand = 'gemini';
+            break;
+          default:
+            return {
+              type: 'error',
+              errorMessage: `Unsupported agent type: '${options.agent}'. Please update your CLI to the latest version.`
+            };
+        }
         const args = [
           agentCommand,
           '--happy-starting-mode', 'remote',
