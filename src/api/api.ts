@@ -200,13 +200,10 @@ export class ApiClient {
    */
   async getVendorToken(vendor: 'openai' | 'anthropic' | 'gemini'): Promise<any | null> {
     try {
-      const response = await axios.get(
+      const response = await httpClient.get(
         `${configuration.serverUrl}/v1/connect/${vendor}/token`,
         {
-          headers: {
-            'Authorization': `Bearer ${this.credential.token}`,
-            'Content-Type': 'application/json'
-          },
+          headers: getAuthHeaders(this.credential.token),
           timeout: 5000
         }
       );
