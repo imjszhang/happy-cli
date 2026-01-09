@@ -457,11 +457,8 @@ ${chalk.bold('Usage:')}
   happy [options]         Start Claude with mobile control
   happy auth              Manage authentication
   happy codex             Start Codex mode
-<<<<<<< HEAD
   happy config            Manage CLI configuration (API keys, etc.)
-=======
   happy gemini            Start Gemini mode (ACP)
->>>>>>> main
   happy connect           Connect AI vendor API keys
   happy notify            Send push notification
   happy daemon            Manage background service that allows
