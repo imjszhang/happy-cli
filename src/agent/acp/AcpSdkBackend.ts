@@ -16,7 +16,9 @@ import {
   type RequestPermissionRequest,
   type RequestPermissionResponse,
   type InitializeRequest,
+  type InitializeResponse,
   type NewSessionRequest,
+  type NewSessionResponse,
   type PromptRequest,
   type ContentBlock,
 } from '@agentclientprotocol/sdk';
@@ -505,7 +507,7 @@ export class AcpSdkBackend implements AgentBackend {
               toolCallId,
               toolName,
               input,
-              options: options.map((opt) => ({
+              options: options.map((opt: { optionId?: string; name?: string; kind?: string }) => ({
                 id: opt.optionId,
                 name: opt.name,
                 kind: opt.kind,
@@ -565,7 +567,7 @@ export class AcpSdkBackend implements AgentBackend {
           
           // Auto-approve with 'proceed_once' if no permission handler
           // optionId must match one from the request options (e.g., 'proceed_once', 'proceed_always', 'cancel')
-          const proceedOnceOption = options.find((opt) => 
+          const proceedOnceOption = options.find((opt: { optionId?: string; name?: string; kind?: string }) =>
             opt.optionId === 'proceed_once' || (typeof opt.name === 'string' && opt.name.toLowerCase().includes('once'))
           );
           const defaultOptionId = proceedOnceOption?.optionId || (options.length > 0 && options[0].optionId ? options[0].optionId : 'proceed_once');
@@ -597,7 +599,7 @@ export class AcpSdkBackend implements AgentBackend {
       logger.debug(`[AcpSdkBackend] Initializing connection...`);
       let initTimeout: NodeJS.Timeout | null = null;
       const initResponse = await Promise.race([
-        this.connection.initialize(initRequest).then((result) => {
+        this.connection.initialize(initRequest).then((result: InitializeResponse) => {
           // Clear timeout if initialization succeeds
           if (initTimeout) {
             clearTimeout(initTimeout);
@@ -634,7 +636,7 @@ export class AcpSdkBackend implements AgentBackend {
       logger.debug(`[AcpSdkBackend] Creating new session...`);
       let newSessionTimeout: NodeJS.Timeout | null = null;
       const sessionResponse = await Promise.race([
-        this.connection.newSession(newSessionRequest).then((result) => {
+        this.connection.newSession(newSessionRequest).then((result: NewSessionResponse) => {
           // Clear timeout if session creation succeeds
           if (newSessionTimeout) {
             clearTimeout(newSessionTimeout);
